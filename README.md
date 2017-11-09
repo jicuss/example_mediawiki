@@ -192,7 +192,7 @@ docker network prune --force
 ```
 
 
-### Linux
+### OSX
 * the volume mount and image storage mechanism has a long known bug that causes the filesize of the docker storage to increase indefinitely. Wiping the docker storage and restarting the services works, but be mindful that you will need to backup your volumes first.
 
     * more information and fix script available @ https://blog.mrtrustor.net/post/clean-docker-for-mac/
