@@ -1,0 +1,11 @@
+{
+    "@metadata": {
+        "authors": [
+            "Arnoud Roques",
+            "Pieter J. Kersten",
+            "Wolfgang Fahl",
+            "Frederic Planchon"
+        ]
+    },
+    "plantuml-desc": "Erzeugt UML Modelle aus PlantUML Textbeschreibungen."
+}

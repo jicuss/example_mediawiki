@@ -1,0 +1,106 @@
+version: '3.1'
+
+volumes:
+    wiki-data-volume: {}
+    jenkins-data-volume: {}
+    db-prod-data-volume: {}
+    db-qa-data-volume: {}
+
+services:
+
+  # in this example I overrode the extension and configuration.
+  # if you customize any of the templates, youll need to override those as well
+  wiki_prod:
+    build: ./wiki
+    volumes:
+      - ./wiki/data/extensions:/var/www/html/extensions
+      - ./wiki/LocalSettings.php:/var/www/html/LocalSettings.php
+    environment:
+      MYSQL_DATABASE: 'production_wiki'
+      MYSQL_USER: 'production_wiki_user'
+      MYSQL_PASSWORD: '123456789'
+      MYSQL_HOST: 'database_prod'
+      SERVER: 'http://localhost:80'
+    ports:
+      - 80:80
+    #entrypoint: "/usr/bin/env bash"
+    restart: always
+
+  wiki_qa:
+    build: ./wiki
+    volumes:
+      - ./wiki/data/extensions:/var/www/html/extensions
+      - ./wiki/LocalSettings.php:/var/www/html/LocalSettings.php
+      #- wiki-data-volume:/var/www
+      #- ./wiki/resources:/var/www/html/resources/assets
+    environment:
+      MYSQL_DATABASE: 'qa_wiki'
+      MYSQL_USER: 'qa_wiki_user'
+      MYSQL_PASSWORD: '234567891'
+      MYSQL_HOST: 'database_qa'
+      SERVER: 'http://localhost:85'
+    ports:
+      - 85:80
+    entrypoint: "/usr/bin/env bash"
+    #restart: always
+
+  # the restart always flag will keep spin up another a copy of the process if it dies
+  database_prod:
+    image: mariadb
+    volumes:
+    - db-prod-data-volume:/var/lib/mysql
+    environment:
+      MYSQL_DATABASE: 'production_wiki'
+      MYSQL_USER: 'production_wiki_user'
+      MYSQL_PASSWORD: '123456789'
+      MYSQL_RANDOM_ROOT_PASSWORD: 'yes'
+    ports:
+      - 3306:3306
+    restart: always
+
+  database_qa:
+    image: mariadb
+    volumes:
+    - db-qa-data-volume:/var/lib/mysql
+    environment:
+      MYSQL_DATABASE: 'qa_wiki'
+      MYSQL_USER: 'qa_wiki_user'
+      MYSQL_PASSWORD: '234567891'
+      MYSQL_RANDOM_ROOT_PASSWORD: 'yes'
+    entrypoint: "/usr/bin/env bash"
+    #restart: always
+
+  # volume mounts are prefered as they isolate the file structure / prevent file permission issues.
+  # folder mounts are useful if you want someone to be able to see the files as they would normally
+  jenkins:
+    build: ./jenkins
+    volumes:
+    - "./backups/db:/mnt/mysql"
+    - "./jenkins/jobs:/var/jenkins_home/jobs"
+    - jenkins-data-volume:/var/jenkins_home
+    - db-prod-data-volume:/mnt/db/prod
+    - db-qa-data-volume:/mnt/db/qa
+    environment:
+      PROD_MYSQL_HOST: 'database_prod'
+      PROD_MYSQL_DATABASE: 'production_wiki'
+      PROD_MYSQL_USER: 'production_wiki_user'
+      PROD_MYSQL_PASSWORD: '123456789'
+      QA_MYSQL_HOST: 'database_qa'
+      QA_MYSQL_DATABASE: 'qa_wiki'
+      QA_MYSQL_USER: 'qa_wiki_user'
+      QA_MYSQL_PASSWORD: '234567891'
+    ports:
+    - 8080:8080
+    #entrypoint: "/usr/bin/env bash"
+    restart: always
+
+
+  # not required, its useful for testing DB connectivity, exporting, or importing
+  # VBVisualizer is a desktop product, much better
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8081:8080
+    entrypoint: "/usr/bin/env bash"
+    # restart: always

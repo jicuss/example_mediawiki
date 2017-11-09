@@ -1,0 +1,12 @@
+{
+    "@metadata": {
+	 "authors": [
+            "Arnoud Roques",
+            "Pieter J. Kersten",
+            "Wolfgang Fahl",
+            "Frederic Planchon"
+        ]
+
+    },
+    "plantuml-desc": "Génère un modèle UML à partir d'un texte en utilisant PlantUML."
+}

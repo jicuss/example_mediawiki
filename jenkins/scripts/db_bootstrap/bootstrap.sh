@@ -1,0 +1,1 @@
+mysql -h ${PROD_MYSQL_HOST} -u${PROD_MYSQL_USER} -p${PROD_MYSQL_PASSWORD} < /app/bootstrap.sql

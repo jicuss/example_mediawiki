@@ -1,0 +1,13 @@
+{
+	"require": {
+		"php": ">=5.3.2"
+	},
+	"config": {
+		"vendor-dir": "../../vendor"
+	},
+	"extra": {
+		"installer-paths": {
+			"../../extensions/{$name}": ["type:mediawiki-extension"]
+		}
+	}
+}
